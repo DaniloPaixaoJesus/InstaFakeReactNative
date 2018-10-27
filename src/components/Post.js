@@ -25,8 +25,11 @@ export default class Post extends Component<Props> {
 
   constructor(props) {
     super(props);
-    //this.state = { foto: this.props.foto }
-    this.state = { foto: {...this.props.foto, likers: [{}, {}]} }
+    this.state = { 
+                    foto: this.props.foto,
+                    comentario: ''
+                }
+    //this.state = { foto: {...this.props.foto, likers: [{}, {}]} }
   }
 
   carregarIconeLike(likeada){
@@ -81,6 +84,28 @@ export default class Post extends Component<Props> {
     );
   }
 
+  adicionaComentario() {
+    if(this.state.comentario === '')
+        return;
+        
+    const novaLista = [
+      ...this.state.foto.comentarios,
+      {
+        id: this.state.comentario,
+        login: 'meuUsuario',
+        texto: this.state.comentario
+      }
+    ];
+  
+    const fotoAtualizada = {
+      ...this.state.foto,
+      comentarios: novaLista
+    }
+  
+    this.setState({foto: fotoAtualizada});
+    this.inputComentario.clear();
+  }
+
   //require('../../resources/img/alura.jpg')
   render() {
     const { foto } = this.state;
@@ -115,8 +140,13 @@ export default class Post extends Component<Props> {
                     </View>
                 )}
                 <View style={styles.novoComentario}>
-                    <TextInput style={styles.input} placeholder="Adicione um comentário..." />
-                    <Image style={styles.icone} source={ require('../../resources/img/send.png') } />
+                    <TextInput style={styles.input} placeholder="Adicione um comentário..." 
+                        ref={input => this.inputComentario = input} 
+                        onChangeText={texto => this.setState({comentario: texto})}
+                    />
+                    <TouchableOpacity onPress={this.adicionaComentario.bind(this)}>
+                        <Image style={styles.icone} source={ require('../../resources/img/send.png') } />
+                    </TouchableOpacity>
                 </View>
                 
             </View>
