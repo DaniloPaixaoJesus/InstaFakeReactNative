@@ -155,16 +155,8 @@ const styles = StyleSheet.create({
     width:width, 
     height:width
   },
-  botaoDeLike: {
-    marginBottom: 10,
-    width: 40,
-    height: 40
-  },
   rodape: {
     margin: 10
-  },
-  likes: {
-    fontWeight: 'bold'
   },
   comentario: {
     flexDirection: 'row'
@@ -172,19 +164,5 @@ const styles = StyleSheet.create({
   tituloComentario: {
     fontWeight: 'bold',
     marginRight: 5
-  },
-  input: {
-    flex: 1,
-    height: 40
-  },
-  novoComentario: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  icone: {
-    width: 30,
-    height: 30
   }
 })
