@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import InputComentario from './InputComentario';
+import Likes from './Likes';
 
 const width = Dimensions.get('screen').width;
 
@@ -35,10 +36,6 @@ export default class Post extends Component<Props> {
                     comentario: ''
                 }
     //this.state = { foto: {...this.props.foto, likers: [{}, {}]} }
-  }
-
-  carregarIconeLike(likeada){
-    return likeada ? require('../../resources/img/s2-checked.png') : require('../../resources/img/s2.png')
   }
 
   like(){
@@ -69,13 +66,6 @@ export default class Post extends Component<Props> {
     // fotoAtualizada.likers = novaLista;
 
     this.setState({foto: fotoAtualizada2});
-  }
-
-  exibeLikes(likers) {
-    if(likers.length <= 0)
-      return;
-  
-    return (<Text style={styles.likes}>{likers.length} {likers.length > 1 ? 'curtidas': 'curtida'}</Text>)
   }
 
   exibeLegenda(foto) {
@@ -117,6 +107,12 @@ export default class Post extends Component<Props> {
     const { foto } = this.state;
     return (
         <View>
+            {/*  comentario no JSX
+            {foto.likers.length > 0 ?
+                <Text style={styles.likes}>{foto.likers.length} {foto.likers.length > 1 ? 'curtidas': 'curtida'}</Text>
+                : null 
+            }
+            */}
             <View style={styles.cabecalho}>
                 <Image source={{uri: foto.urlPerfil}} 
                     style={styles.fotoDePerfil} />
@@ -125,17 +121,8 @@ export default class Post extends Component<Props> {
             <Image source={{uri: foto.urlFoto}}
                 style={styles.foto} />
             <View style={styles.rodape}>
-                <TouchableOpacity onPress={this.like.bind(this)}>
-                    <Image style={styles.botaoDeLike} 
-                            source={this.carregarIconeLike(foto.likeada)} />
-                </TouchableOpacity>
-                {/*  comentario no JSX
-                {foto.likers.length > 0 ?
-                    <Text style={styles.likes}>{foto.likers.length} {foto.likers.length > 1 ? 'curtidas': 'curtida'}</Text>
-                    : null 
-                }
-                */}
-                {this.exibeLikes(foto.likers)}
+                
+                <Likes foto={foto} likeCallback={this.like.bind(this)} />
                 
                 {this.exibeLegenda(foto)}
 
