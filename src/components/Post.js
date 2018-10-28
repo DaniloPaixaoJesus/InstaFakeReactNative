@@ -18,8 +18,13 @@ import {
   TextInput
 } from 'react-native';
 
+import InputComentario from './InputComentario';
+
 const width = Dimensions.get('screen').width;
 
+/**
+ * componente maior que isola e encapsula as regras do seu negócio chamamos de container components.
+ */
 type Props = {};
 export default class Post extends Component<Props> {
 
@@ -84,16 +89,16 @@ export default class Post extends Component<Props> {
     );
   }
 
-  adicionaComentario() {
-    if(this.state.comentario === '')
+  adicionaComentario(comentario, inputComentario) {
+    if(comentario === '')
         return;
         
     const novaLista = [
       ...this.state.foto.comentarios,
       {
-        id: this.state.comentario,
+        id: comentario,
         login: 'meuUsuario',
-        texto: this.state.comentario
+        texto: comentario
       }
     ];
   
@@ -101,9 +106,10 @@ export default class Post extends Component<Props> {
       ...this.state.foto,
       comentarios: novaLista
     }
-  
+    
+    //this.setState({foto: fotoAtualizada, comentario: ''});
     this.setState({foto: fotoAtualizada});
-    this.inputComentario.clear();
+    inputComentario.clear();
   }
 
   //require('../../resources/img/alura.jpg')
@@ -139,15 +145,7 @@ export default class Post extends Component<Props> {
                         <Text>{comentario.texto}</Text>
                     </View>
                 )}
-                <View style={styles.novoComentario}>
-                    <TextInput style={styles.input} placeholder="Adicione um comentário..." 
-                        ref={input => this.inputComentario = input} 
-                        onChangeText={texto => this.setState({comentario: texto})}
-                    />
-                    <TouchableOpacity onPress={this.adicionaComentario.bind(this)}>
-                        <Image style={styles.icone} source={ require('../../resources/img/send.png') } />
-                    </TouchableOpacity>
-                </View>
+                <InputComentario addComentarioCallback={this.adicionaComentario.bind(this)} />
                 
             </View>
         </View>
