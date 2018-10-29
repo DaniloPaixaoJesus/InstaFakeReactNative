@@ -52,13 +52,61 @@ export default class App extends Component<Props> {
         .then(json => this.setState({fotos: json}));
   }
 
+  adicionaComentario(idFoto, comentario, inputComentario) {
+    if(comentario === '')
+        return;   
+    const foto = this.state.fotos.find(foto => foto.id === idFoto) 
+    const novaListaComentarios = [
+      ...foto.comentarios,
+      {
+        id: comentario,
+        login: 'meuUsuario',
+        texto: comentario
+      }
+    ];
+    const fotoAtualizada = {
+      ...foto,
+      comentarios: novaListaComentarios
+    }
+    const fotos = this.state.fotos.map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto)
+    this.setState({fotos});//é o mesmo que this.setState({fotos:fotos});
+    inputComentario.clear();
+  }
+
+  like(idFoto){
+    const foto = this.state.fotos.find(foto => foto.id === idFoto)
+    let novaLista = [];
+    if(!foto.likeada){
+        novaLista = foto.likers.concat({login: 'meuUsuario'});
+    } else{
+        novaLista = foto.likers.filter(liker => {
+          return liker.login !== 'meuUsuario';
+        })
+    }
+    const fotoAtualizada = {
+        ...foto,
+        likeada: !foto.likeada,
+        likers: novaLista
+      }
+    // let fotoAtualizada = foto;
+    // fotoAtualizada.likeada = !foto.likeada;
+    // fotoAtualizada.likers = novaLista;
+
+
+    const fotos = this.state.fotos.map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada:foto);
+    this.setState({fotos});
+  }
+
   render() {
     return (
       <FlatList style={styles.container}
         data={this.state.fotos}
         keyExtractor={item => item.id}
         renderItem={ ({item}) => 
-          <Post foto={item}/>
+          <Post foto={item}
+              likeCallback={this.like.bind(this)}
+              addComentarioCallback={this.adicionaComentario.bind(this)}
+          />
         }
       />
     );

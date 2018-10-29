@@ -29,45 +29,6 @@ const width = Dimensions.get('screen').width;
 type Props = {};
 export default class Post extends Component<Props> {
 
-  constructor(props) {
-    super(props);
-    this.state = { 
-                    foto: this.props.foto,
-                    comentario: ''
-                }
-    //this.state = { foto: {...this.props.foto, likers: [{}, {}]} }
-  }
-
-  like(){
-    const { foto } = this.state;
-
-    // bug-> nao remove a minha curtida quando eu discurto
-    // if(!this.state.foto.likeada){
-    //     novaLista = this.state.foto.likers.concat({login: 'meuUsuario'});
-    // }
-
-    let novaLista = [];
-    if(!foto.likeada){
-        novaLista = foto.likers.concat({login: 'meuUsuario'});
-    } else{
-        novaLista = foto.likers.filter(liker => {
-          return liker.login !== 'meuUsuario';
-        })
-    }
-
-    const fotoAtualizada2 = {
-        ...foto,
-        likeada: !foto.likeada,
-        likers: novaLista
-      }
-
-    // let fotoAtualizada = foto;
-    // fotoAtualizada.likeada = !foto.likeada;
-    // fotoAtualizada.likers = novaLista;
-
-    this.setState({foto: fotoAtualizada2});
-  }
-
   exibeLegenda(foto) {
     if(foto.comentario == '')
       return;
@@ -79,40 +40,10 @@ export default class Post extends Component<Props> {
     );
   }
 
-  adicionaComentario(comentario, inputComentario) {
-    if(comentario === '')
-        return;
-        
-    const novaLista = [
-      ...this.state.foto.comentarios,
-      {
-        id: comentario,
-        login: 'meuUsuario',
-        texto: comentario
-      }
-    ];
-  
-    const fotoAtualizada = {
-      ...this.state.foto,
-      comentarios: novaLista
-    }
-    
-    //this.setState({foto: fotoAtualizada, comentario: ''});
-    this.setState({foto: fotoAtualizada});
-    inputComentario.clear();
-  }
-
-  //require('../../resources/img/alura.jpg')
   render() {
-    const { foto } = this.state;
+    const { foto, likeCallback, addComentarioCallback } = this.props;
     return (
         <View>
-            {/*  comentario no JSX
-            {foto.likers.length > 0 ?
-                <Text style={styles.likes}>{foto.likers.length} {foto.likers.length > 1 ? 'curtidas': 'curtida'}</Text>
-                : null 
-            }
-            */}
             <View style={styles.cabecalho}>
                 <Image source={{uri: foto.urlPerfil}} 
                     style={styles.fotoDePerfil} />
@@ -122,7 +53,7 @@ export default class Post extends Component<Props> {
                 style={styles.foto} />
             <View style={styles.rodape}>
                 
-                <Likes foto={foto} likeCallback={this.like.bind(this)} />
+                <Likes foto={foto} likeCallback={likeCallback} />
                 
                 {this.exibeLegenda(foto)}
 
@@ -132,7 +63,7 @@ export default class Post extends Component<Props> {
                         <Text>{comentario.texto}</Text>
                     </View>
                 )}
-                <InputComentario addComentarioCallback={this.adicionaComentario.bind(this)} />
+                <InputComentario idFoto={foto.id} addComentarioCallback={addComentarioCallback} />
                 
             </View>
         </View>

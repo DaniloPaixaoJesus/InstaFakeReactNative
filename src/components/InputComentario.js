@@ -33,7 +33,7 @@ export default class InputComentario extends Component<Props> {
   }
 
   render() {
-    const { addComentarioCallback } = this.props;
+    const { addComentarioCallback, idFoto } = this.props;
     const { comentario } = this.state;
     return (
         <View style={styles.novoComentario}>
@@ -43,7 +43,7 @@ export default class InputComentario extends Component<Props> {
             />
             <TouchableOpacity onPress={
                 ()=> {
-                    this.props.addComentarioCallback(this.state.comentario, this.inputComentario);
+                    this.props.addComentarioCallback(idFoto, this.state.comentario, this.inputComentario);
                     this.setState({comentario:''});
                 }
             }>
