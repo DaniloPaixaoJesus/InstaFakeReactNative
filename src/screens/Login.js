@@ -8,15 +8,17 @@
 
 import React, {Component} from 'react';
 import {
-  Platform, 
-  StyleSheet, 
-  Text, 
-  View, 
+  StyleSheet,
+  Text,
+  View,
   Image,
   Dimensions,
+  FlatList,
   TouchableOpacity,
-  TextInput
-} from 'react-native';
+  TextInput,
+  Button,
+  AsyncStorage
+}from 'react-native';
 
 const width = Dimensions.get('screen').width;
 
@@ -27,24 +29,90 @@ const width = Dimensions.get('screen').width;
 type Props = {};
 export default class Login extends Component<Props> {
 
+  constructor() {
+    super();
+    this.state = {
+        usuario:'',
+        mensagem:''
+    }
+  }
+
+  //SEND Rafael 123456
+  efetuaLogin() {
+    const uri= "https://instalura-api.herokuapp.com/api/public/login";
+
+    const requestInfo = {
+      method: 'POST',
+      body: JSON.stringify({
+        login: this.state.usuario,
+        senha: this.state.senha,  
+      }),
+      headers: new Headers({
+          'Content-type': 'application/json'
+      })
+    }
+
+    fetch(uri, requestInfo)
+    .then(response => {
+        if(response.ok)
+          return response.text();
+
+        throw new Error("Não foi possível efetuar login")
+    })
+    .then(token => {
+        AsyncStorage.setItem('token', token);
+        AsyncStorage.setItem('usuario',this.state.usuario);
+        return AsyncStorage.getItem('token'); //get item é um promise
+    })
+    .catch(e => this.setState({mensagem: e.message}))
+  }
+
   render() {
     const { foto, likeCallback, addComentarioCallback } = this.props;
     return (
       <View style={styles.container}>
+        <Text style= {styles.titulo}>InstaFake</Text>
+        <View style={styles.form}>
+            <TextInput style={styles.input} 
+                placeholder="Usuário..."
+                onChangeText={texto => this.setState({usuario: texto})}
+                autoCapitalize="none" />
 
-      <TextInput placeholder="Usuário..."
-          onChangeText={texto => this.setState({usuario: texto})}/>
+            <TextInput style={styles.input} 
+                placeholder="Senha..."
+                onChangeText={texto => this.setState({senha: texto})}
+                secureTextEntry={true} />
 
-      <TextInput placeholder="Senha..."
-          onChangeText={texto => this.setState({senha: texto})}/>
-
-  </View>
+            <Button title="Login" onPress={this.efetuaLogin.bind(this)} />
+        </View>
+        <Text style={styles.mensagem}>
+            {this.state.mensagem}
+        </Text>
+      </View>
     );
   }
 }
+
 const styles = StyleSheet.create({
   container: {
-      alignItems: 'center'
-
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  titulo: {
+      fontWeight: 'bold',
+      fontSize: 26,
+  },
+  form: {
+      width: width * 0.8
+  },
+  input: {
+      height: 40,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd'
+  },
+  mensagem: {
+      marginTop: 15,
+      color: '#e74c3c'
   }
 });
