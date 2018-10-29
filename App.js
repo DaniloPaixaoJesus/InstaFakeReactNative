@@ -35,6 +35,10 @@ const fotosTeste = [
   {id: 3, usuario: 'Adriel'}
 ];
 
+/**
+ * App Class
+ * componente maior que isola e encapsula as regras do seu negócio chamamos de container components.
+ */
 type Props = {};
 export default class App extends Component<Props> {
   

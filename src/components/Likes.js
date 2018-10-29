@@ -16,6 +16,10 @@ import {
   TouchableOpacity
 } from 'react-native';
 
+/**
+ * Os componentes menores que existem para ajudar na visualização da nossa aplicação 
+ * são chamados presentational components.
+ */
 type Props = {};
 export default class Likes extends Component<Props> {
 

@@ -24,7 +24,8 @@ import Likes from './Likes';
 const width = Dimensions.get('screen').width;
 
 /**
- * componente maior que isola e encapsula as regras do seu negócio chamamos de container components.
+ * Os componentes menores que existem para ajudar na visualização da nossa aplicação 
+ * são chamados presentational components.
  */
 type Props = {};
 export default class Post extends Component<Props> {
