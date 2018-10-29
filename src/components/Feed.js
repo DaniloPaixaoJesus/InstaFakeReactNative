@@ -17,7 +17,7 @@ import {
   ScrollView,
   FlatList
 } from 'react-native';
-import Post from './src/components/Post';
+import Post from './Post';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -40,7 +40,7 @@ const fotosTeste = [
  * componente maior que isola e encapsula as regras do seu negócio chamamos de container components.
  */
 type Props = {};
-export default class App extends Component<Props> {
+export default class Feed extends Component<Props> {
   
   //construtor da classe App
   constructor() {
