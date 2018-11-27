@@ -103,7 +103,7 @@ export default class Feed extends Component<Props> {
 
   render() {
     return (
-      <FlatList style={styles.container}
+      <FlatList 
         data={this.state.fotos}
         keyExtractor={item => item.id}
         renderItem={ ({item}) => 
@@ -117,11 +117,11 @@ export default class Feed extends Component<Props> {
   }
 }
 
-const margem = Platform.OS == 'ios' ? 20 : 0;
+//const margem = Platform.OS == 'ios' ? 20 : 0; //nao eh mais necessario apos o uso do react-native-navegator
 const styles = StyleSheet.create({
-  container: {
-    marginTop: margem
-  },
+  // containerFlatList: {
+  //   marginTop: margem
+  // },
   cabecalho: {
     margin: 10, 
     flexDirection: 'row', 

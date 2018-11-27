@@ -63,7 +63,12 @@ export default class Login extends Component<Props> {
         console.warn('token=>', token)
         AsyncStorage.setItem('token', token);
         AsyncStorage.setItem('usuario',this.state.usuario);
-        return AsyncStorage.getItem('token'); //get item é um promise
+        //navegue para o feed
+        this.props.navigator.resetTo({
+            screen: 'Feed',
+            title: 'Instalura',
+        });
+        //return AsyncStorage.getItem('token'); //get item é um promise
     })
     .catch(e => this.setState({mensagem: e.message}))
   }
