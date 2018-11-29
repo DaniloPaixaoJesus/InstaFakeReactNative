@@ -15,9 +15,11 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  FlatList
+  FlatList,
+  AsyncStorage
 } from 'react-native';
 import Post from './Post';
+import InstaluraFetchService from '../services/InstaluraFetchService';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -51,54 +53,75 @@ export default class Feed extends Component<Props> {
   }
 
   componentDidMount() {
-    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
-        .then(resposta => resposta.json())
-        .then(json => this.setState({fotos: json}));
+    InstaluraFetchService.get('fotos').then(json => this.setState({fotos: json}))
   }
 
   adicionaComentario(idFoto, comentario, inputComentario) {
     if(comentario === '')
         return;   
-    const foto = this.state.fotos.find(foto => foto.id === idFoto) 
-    const novaListaComentarios = [
-      ...foto.comentarios,
-      {
-        id: comentario,
-        login: 'meuUsuario',
-        texto: comentario
-      }
-    ];
-    const fotoAtualizada = {
-      ...foto,
-      comentarios: novaListaComentarios
-    }
-    const fotos = this.state.fotos.map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto)
-    this.setState({fotos});//é o mesmo que this.setState({fotos:fotos});
-    inputComentario.clear();
+    const foto = this.buscaPorId(idFoto);
+    const dados = { texto : comentario };
+    InstaluraFetchService
+      .post(`fotos/${idFoto}/comment`, dados)
+      .then(comentario => {
+        console.warn('comentario=>', comentario);
+        //concatena duas listas -> ES6
+        const novaListaComentarios = [ ...foto.comentarios, comentario ];
+        const fotoAtualizada = {
+          ...foto,
+          comentarios: novaListaComentarios
+        }
+        this.atualizaFotos(fotoAtualizada);
+        inputComentario.clear();
+      });
   }
 
   like(idFoto){
-    const foto = this.state.fotos.find(foto => foto.id === idFoto)
-    let novaLista = [];
-    if(!foto.likeada){
-        novaLista = foto.likers.concat({login: 'meuUsuario'});
-    } else{
-        novaLista = foto.likers.filter(liker => {
-          return liker.login !== 'meuUsuario';
+    const foto = this.state.fotos.find(foto => foto.id === idFoto);
+    AsyncStorage.getItem('usuario').then(usuarioLogado => {
+        let novaLista = [];
+        if(!foto.likeada){
+            novaLista = foto.likers.concat({login: usuarioLogado});
+        } else{
+            novaLista = foto.likers.filter(liker => {
+              return liker.login !== usuarioLogado;
+            })
+        }
+        return novaLista;
+      }).then(novaLista => {
+        const fotoAtualizada = {
+            ...foto,
+            likeada: !foto.likeada,
+            likers: novaLista
+          }
+        this.atualizaFotos(fotoAtualizada);
+    });
+
+    const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`;
+      AsyncStorage.getItem('token')
+        .then(token =>{
+          return {
+            method: 'POST',
+            headers: new Headers({
+              "X-AUTH-TOKEN": token
+            })
+          }
         })
-    }
-    const fotoAtualizada = {
-        ...foto,
-        likeada: !foto.likeada,
-        likers: novaLista
-      }
-    // let fotoAtualizada = foto;
-    // fotoAtualizada.likeada = !foto.likeada;
-    // fotoAtualizada.likers = novaLista;
+        .then(requestInfo => fetch(uri, requestInfo));
+  }
 
+  buscaPorId(idFoto){
+    return this.state.fotos.find(foto => foto.id === idFoto);
+  }
 
-    const fotos = this.state.fotos.map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada:foto);
+  atualizaFotos(fotoAtualizada){
+    const fotos = this.state.fotos
+                    .map(
+                      foto => foto.id === fotoAtualizada.id ? fotoAtualizada: foto
+                    );
     this.setState({fotos});
+    //this.setState({fotos:fotos}); mesmo que
+                
   }
 
   render() {

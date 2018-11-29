@@ -60,7 +60,7 @@ export default class Login extends Component<Props> {
         throw new Error("Não foi possível efetuar login")
     })
     .then(token => {
-        console.warn('token=>', token)
+        //console.warn('token=>', token);
         AsyncStorage.setItem('token', token);
         AsyncStorage.setItem('usuario',this.state.usuario);
         //navegue para o feed

@@ -9,7 +9,7 @@ export default () => {
 
   AsyncStorage.getItem('token')
     .then(token => {
-
+      //console.warn('token=>', token)
       if(token) {
         return {
           screen: 'Feed',
