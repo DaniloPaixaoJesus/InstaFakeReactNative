@@ -16,11 +16,13 @@ import {
   Dimensions,
   ScrollView,
   FlatList,
+  TouchableOpacity,
   AsyncStorage
 } from 'react-native';
 import Post from './Post';
 import InstaluraFetchService from '../services/InstaluraFetchService';
 import Notificacao from '../api/Notificacao';
+import HeaderUsuario from './HeaderUsuario';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -54,7 +56,10 @@ export default class Feed extends Component<Props> {
   }
 
   componentDidMount() {
-    this.load();
+    this.props.navigator.setOnNavigatorEvent(evento => {
+      if(evento.id === 'willAppear')
+        this.load();
+    });
   }
 
   load() {
@@ -145,9 +150,15 @@ export default class Feed extends Component<Props> {
       backButtonTitle: '',
       title: foto.loginUsuario,
       passProps: {
-        usuario : foto.loginUsuario
+        usuario : foto.loginUsuario,
+        fotoDePerfil: foto.urlPerfil
       }
     });
+  }
+
+  exibeHeader() {
+    if(this.props.usuario)
+      return <HeaderUsuario {...this.props} posts={this.state.fotos.length} />;
   }
 
   render() {
@@ -160,17 +171,20 @@ export default class Feed extends Component<Props> {
         </TouchableOpacity>
       );
     return (
-      <FlatList 
-        data={this.state.fotos}
-        keyExtractor={item => item.id}
-        renderItem={ ({item}) => 
-          <Post foto={item}
-              likeCallback={this.like.bind(this)}
-              addComentarioCallback={this.adicionaComentario.bind(this)}
-              verPerfilCallback={this.verPerfilUsuario.bind(this)}
-          />
-        }
-      />
+      <ScrollView>
+        {this.exibeHeader()}
+        <FlatList 
+          data={this.state.fotos}
+          keyExtractor={item => item.id}
+          renderItem={ ({item}) => 
+            <Post foto={item}
+                likeCallback={this.like.bind(this)}
+                addComentarioCallback={this.adicionaComentario.bind(this)}
+                verPerfilCallback={this.verPerfilUsuario.bind(this)}
+            />
+          }
+        />
+      </ScrollView>
     );
   }
 }
