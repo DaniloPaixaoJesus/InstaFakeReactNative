@@ -29,6 +29,10 @@ const width = Dimensions.get('screen').width;
 type Props = {};
 export default class Login extends Component<Props> {
 
+    // static navigatorStyle = {
+    //     navBarHidden: true
+    // };
+
   constructor() {
     super();
     this.state = {

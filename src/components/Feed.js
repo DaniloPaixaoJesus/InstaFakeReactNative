@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import Post from './Post';
 import InstaluraFetchService from '../services/InstaluraFetchService';
+import Notificacao from '../api/Notificacao';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -53,30 +54,47 @@ export default class Feed extends Component<Props> {
   }
 
   componentDidMount() {
-    InstaluraFetchService.get('fotos').then(json => this.setState({fotos: json}))
+    this.load();
+  }
+
+  load() {
+    const uri = 'fotos';
+    if(this.props.loginUsuario){
+      uri = `fotos/${this.props.loginUsuario}`;
+    }
+    InstaluraFetchService
+        .get(uri)
+        .then(json => this.setState({fotos: json, status: 'NORMAL'}))
+        .catch(e => this.setState({status: 'FALHA_CARREGAMENTO'}));
   }
 
   adicionaComentario(idFoto, comentario, inputComentario) {
     if(comentario === '')
         return;   
+    const listaOriginalFotos = this.state.fotos;
     const foto = this.buscaPorId(idFoto);
     const dados = { texto : comentario };
     InstaluraFetchService
       .post(`fotos/${idFoto}/comment`, dados)
       .then(comentario => {
-        console.warn('comentario=>', comentario);
         //concatena duas listas -> ES6
         const novaListaComentarios = [ ...foto.comentarios, comentario ];
         const fotoAtualizada = {
           ...foto,
           comentarios: novaListaComentarios
         }
-        this.atualizaFotos(fotoAtualizada);
+        this.atualizaFoto(fotoAtualizada);
         inputComentario.clear();
+      })
+      .catch(e => {
+        //console.warn(e);
+        this.setState({fotos:listaOriginalFotos});
+        Notificacao.exibe('Ops..', 'Algo deu errado ao adicionar o comentário');
       });
   }
 
   like(idFoto){
+    const listaOriginalFotos = this.state.fotos;
     const foto = this.state.fotos.find(foto => foto.id === idFoto);
     AsyncStorage.getItem('usuario').then(usuarioLogado => {
         let novaLista = [];
@@ -94,27 +112,23 @@ export default class Feed extends Component<Props> {
             likeada: !foto.likeada,
             likers: novaLista
           }
-        this.atualizaFotos(fotoAtualizada);
+        this.atualizaFoto(fotoAtualizada);
     });
 
-    const uri = `https://instalura-api.herokuapp.com/api/fotos/${idFoto}/like`;
-      AsyncStorage.getItem('token')
-        .then(token =>{
-          return {
-            method: 'POST',
-            headers: new Headers({
-              "X-AUTH-TOKEN": token
-            })
-          }
-        })
-        .then(requestInfo => fetch(uri, requestInfo));
+    InstaluraFetchService
+          .post(`fotos/${idFoto}/like`)
+          .catch(e => {
+            //console.warn(e);
+            this.setState({fotos:listaOriginalFotos});
+            Notificacao.exibe('Ops..', 'Algo deu errado');
+          });
   }
 
   buscaPorId(idFoto){
     return this.state.fotos.find(foto => foto.id === idFoto);
   }
 
-  atualizaFotos(fotoAtualizada){
+  atualizaFoto(fotoAtualizada){
     const fotos = this.state.fotos
                     .map(
                       foto => foto.id === fotoAtualizada.id ? fotoAtualizada: foto
@@ -124,7 +138,27 @@ export default class Feed extends Component<Props> {
                 
   }
 
+  verPerfilUsuario(idFoto){
+    const foto = this.buscaPorId(idFoto);
+    this.props.navigator.push({
+      screen: 'PerfilUsuario',
+      backButtonTitle: '',
+      title: foto.loginUsuario,
+      passProps: {
+        usuario : foto.loginUsuario
+      }
+    });
+  }
+
   render() {
+    if(this.state.status === 'FALHA_CARREGAMENTO')
+      return (
+        <TouchableOpacity style={styles.container} onPress={this.load.bind(this)}>
+          <Text style={[styles.texto, styles.titulo]}>Ops..</Text>
+          <Text style={styles.texto}>Não foi possível carregar o feed</Text>
+          <Text style={styles.texto}>Toque para tentar novamente</Text>
+        </TouchableOpacity>
+      );
     return (
       <FlatList 
         data={this.state.fotos}
@@ -133,6 +167,7 @@ export default class Feed extends Component<Props> {
           <Post foto={item}
               likeCallback={this.like.bind(this)}
               addComentarioCallback={this.adicionaComentario.bind(this)}
+              verPerfilCallback={this.verPerfilUsuario.bind(this)}
           />
         }
       />

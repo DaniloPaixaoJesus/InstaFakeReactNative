@@ -23,7 +23,6 @@ export default class InstaluraFetchService {
 
     static post(recurso, dados){
         const uri = `https://instalura-api.herokuapp.com/api/${recurso}`;
-        console.warn(uri);
         return AsyncStorage.getItem('token')
             .then(token => {
                 return {
@@ -38,7 +37,11 @@ export default class InstaluraFetchService {
             .then(requestInfo => {
                 return fetch(uri, requestInfo);
             })
-            .then(response => response.json())
+            .then(response => {
+                if(response.ok)
+                    return response.json()
+                throw new Error('Não foi possível completar a operação');
+            })
     }
 
 }
