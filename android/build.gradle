@@ -37,3 +37,16 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.4'
     distributionUrl = distributionUrl.replace("bin", "all")
 }
+
+// Adicionado após erro
+// /Users/user/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/58db3126434eaf2fcc1cdc2eea3d3747/res/values/values.xml:251:5-69: AAPT: error: resource android:attr/fontWeight not found.
+subprojects {
+    afterEvaluate {
+        project -> if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 27
+                buildToolsVersion "27.0.3"
+            }
+        }
+    }
+}
