@@ -7,7 +7,7 @@ class Screen2 extends Component {
     return (
       <Container
         backgroundColor="#c95e0c"
-        onPress={() => console.warn('pressed Screen2')}
+        onPress={() => console.warn('event pressed Screen2')}
       />
     );
   }

@@ -46,18 +46,91 @@ const fotosTeste = [
  */
 type Props = {};
 export default class Feed extends Component<Props> {
+
+  static navigatorButtons = {
+    leftButtons: [// buttons for the left side of the nav bar (optional)
+      {
+        icon: require('../../resources/img/icon1.png'),
+        title: 'menu', // for a textual button, provide the button title (label)
+        id: 'menu', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+        testID: 'e2e_rules' // optional, used to locate this view in end-to-end tests
+      },
+    ]
+  };
   
   //construtor da classe App
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    //this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.state = {
       fotos: []
     }
   }
 
+  verPerfilRafael(){
+    this.props.navigator.push({
+      screen: 'PerfilUsuario',
+      backButtonTitle: '',
+      title: 'Rafael',
+      passProps: {
+        usuario : 'Rafael',
+        fotoDePerfil: 'https://s3.amazonaws.com/caelum-online-public/react-native-parte-2/images/adittional-resources/profile-photo-rafael.jpg'
+      }
+    });
+  }
+
+  navToScreen(screen, title){
+    this.props.navigator.push({
+      screen: screen,
+      title: title,
+    });
+  }
+
+  closeDrawerMenu(){
+    this.props.navigator.toggleDrawer({
+      side: 'left',
+      visible: true,
+      to: 'closed'
+    });
+  }
+
+  openDrawerMenu(){
+    this.props.navigator.toggleDrawer({
+      side: 'left',
+      visible: true,
+      to: 'open'
+    });
+  }
+
+  // onNavigatorEvent(event) {
+  //   console.warn(`onNavigatorEvent event.type => ${event.type}`)
+  //   console.warn(`onNavigatorEvent event.id => ${event.id}`)
+  //   if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+  //     if (event.id == 'menu') {
+  //       this.openDrawerMenu();
+  //     }
+  //   }
+  // }
+
   componentDidMount() {
-    this.props.navigator.setOnNavigatorEvent(evento => {
-      if(evento.id === 'willAppear')
+    this.props.navigator.setOnNavigatorEvent(event => {
+      if (event.type == 'DeepLink') {
+        const parts = event.link;
+        if (parts == 'Screen2') {
+          this.closeDrawerMenu();
+          this.navToScreen('Screen2', 'Screen2');
+        }
+        if (parts == 'Feed') {
+          this.closeDrawerMenu();
+          this.verPerfilRafael()
+        }
+      }
+      if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+        if (event.id == 'menu') {
+          this.openDrawerMenu();
+        }
+      }
+      if(event.id === 'willAppear')
         this.load();
     });
   }
