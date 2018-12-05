@@ -18,7 +18,6 @@ export default class HeaderDrawerMenu extends Component {
         <View style={styles.painelFoto}>
           <Image style={styles.fotoDoPerfil}
                 source={require('../../resources/img/foto_login.jpg')} />
-
           <View style={styles.usuarioInfo}>
             <Text style={styles.texto}>Danilo de Jesus</Text>
           </View>
@@ -33,14 +32,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: margem,
-    alignItems: 'flex-start',
+    marginBottom: 15,
+    //alignItems: 'flex-start',
     backgroundColor: '#fff',
-    padding: 20,
     borderBottomColor: '#ddd',
-    borderBottomWidth: 1
+    borderBottomWidth: 2,
+    borderTopColor: '#ddd',
+    borderTopWidth: 2
   },
   painelFoto: {
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingTop: 20
     //flexDirection: 'row',
     //marginBottom: 20
   },
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 30
+    padding: 20
   },
   posts: {
     marginRight: 10,

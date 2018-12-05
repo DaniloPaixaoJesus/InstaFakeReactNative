@@ -63,20 +63,9 @@ export default class Feed extends Component<Props> {
     super(props);
     //this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.state = {
-      fotos: []
+      fotos: [],
+      drawerShow: false
     }
-  }
-
-  verPerfilRafael(){
-    this.props.navigator.push({
-      screen: 'PerfilUsuario',
-      backButtonTitle: '',
-      title: 'Rafael',
-      passProps: {
-        usuario : 'Rafael',
-        fotoDePerfil: 'https://s3.amazonaws.com/caelum-online-public/react-native-parte-2/images/adittional-resources/profile-photo-rafael.jpg'
-      }
-    });
   }
 
   navToScreen(screen, title){
@@ -87,6 +76,7 @@ export default class Feed extends Component<Props> {
   }
 
   closeDrawerMenu(){
+    this.setState({drawerShow: false});
     this.props.navigator.toggleDrawer({
       side: 'left',
       visible: true,
@@ -95,6 +85,7 @@ export default class Feed extends Component<Props> {
   }
 
   openDrawerMenu(){
+    this.setState({drawerShow: true});
     this.props.navigator.toggleDrawer({
       side: 'left',
       visible: true,
@@ -102,36 +93,30 @@ export default class Feed extends Component<Props> {
     });
   }
 
-  // onNavigatorEvent(event) {
-  //   console.warn(`onNavigatorEvent event.type => ${event.type}`)
-  //   console.warn(`onNavigatorEvent event.id => ${event.id}`)
-  //   if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-  //     if (event.id == 'menu') {
-  //       this.openDrawerMenu();
-  //     }
-  //   }
-  // }
-
   componentDidMount() {
     this.props.navigator.setOnNavigatorEvent(event => {
+      //treat menu item links
       if (event.type == 'DeepLink') {
         const parts = event.link;
-        if (parts == 'Screen2') {
-          this.closeDrawerMenu();
-          this.navToScreen('Screen2', 'Screen2');
-        }
-        if (parts == 'Feed') {
-          this.closeDrawerMenu();
-          this.verPerfilRafael()
-        }
+        this.closeDrawerMenu();
+        this.navToScreen(parts, '');
       }
+
+      //treat menu button touch
       if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
         if (event.id == 'menu') {
-          this.openDrawerMenu();
+          if(this.state.drawerShow){
+            this.closeDrawerMenu();
+          }else{
+            this.openDrawerMenu();
+          }
         }
       }
-      if(event.id === 'willAppear')
+      //load photos
+      if(event.id === 'willAppear'){
         this.load();
+      }
+
     });
   }
 

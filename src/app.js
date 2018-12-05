@@ -5,6 +5,7 @@ import Login from './screens/Login';
 import DrawerMenu from './screens/DrawerMenu';
 import Screen2 from './screens/Screen2';
 import Home from './screens/Home';
+import MapScreen from './screens/MapScreen';
 
 export default () => {
   /* INSTALURA
@@ -61,13 +62,16 @@ export default () => {
  Navigation.registerComponent('DrawerMenu', () => DrawerMenu);
  Navigation.registerComponent('Screen2', () => Screen2);
  Navigation.registerComponent('Home', () => Home);
+ Navigation.registerComponent('MapScreen', () => MapScreen);
+ 
 
  AsyncStorage.getItem('token')
     .then(token => {
       if(token) {
-        return 'Feed';
+        //return 'Feed';
+        return 'Home';
       }else{
-        return 'Login';
+        return 'Home';
       }
     }
   ).then(screenHome => {
@@ -89,7 +93,7 @@ export default () => {
          },
          style: {
              // ( iOS only )
-             drawerShadow: false//, // optional, add this if you want a side menu drawer shadow
+             drawerShadow: true//, // optional, add this if you want a side menu drawer shadow
              //contentOverlayColor: 'rgba(0,0,0,0.25)', // optional, add this if you want a overlay color when drawer is open
              //leftDrawerWidth: 50, // optional, add this if you want a define left drawer width (50=percent)
              //rightDrawerWidth: 50 // optional, add this if you want a define right drawer width (50=percent)
